@@ -1,14 +1,14 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 
 import { TournamentsList } from '@/features/tournaments';
 import { TeamsList } from '@/features/teams';
 import { MatchesList } from '@/features/matches';
 
-export function DashboardTabs() {
+function DashboardTabsContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -44,5 +44,19 @@ export function DashboardTabs() {
                 <MatchesList />
             </TabsContent>
         </Tabs>
+    );
+}
+
+export function DashboardTabs() {
+    return (
+        <Suspense
+            fallback={
+                <div className="p-8 text-center text-slate-500 font-medium">
+                    Завантаження даних...
+                </div>
+            }
+        >
+            <DashboardTabsContent />
+        </Suspense>
     );
 }
