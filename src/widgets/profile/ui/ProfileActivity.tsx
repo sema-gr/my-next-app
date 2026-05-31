@@ -22,18 +22,32 @@ export function ProfileActivity({ user }: ProfileActivityProps) {
         setLoading(true);
 
         if (user.role === 'ORGANIZER') {
-            api.get<ITournament[]>(`/tournaments?organizerId=${user.id}`)
-                .then((res) => setTournaments(res))
+            api.get(`/tournaments?organizerId=${user.id}`)
+                .then((res) => {
+                    // Безпечне розпакування пагінованої відповіді
+                    const payload =
+                        (res as any).data?.data !== undefined
+                            ? (res as any).data
+                            : res;
+                    setTournaments(payload.data || payload || []);
+                })
                 .catch((err) =>
                     console.error('Помилка завантаження турнірів:', err)
                 )
                 .finally(() => setLoading(false));
         } else if (user.role === 'PLAYER') {
             const token = localStorage.getItem('token');
-            api.get<ITeam[]>('/teams/my-teams', {
+            api.get('/teams/my-teams', {
                 headers: { Authorization: `Bearer ${token}` },
             })
-                .then((res) => setTeams(res))
+                .then((res) => {
+                    // Безпечне розпакування для команд
+                    const payload =
+                        (res as any).data?.data !== undefined
+                            ? (res as any).data
+                            : res;
+                    setTeams(payload.data || payload || []);
+                })
                 .catch((err) =>
                     console.error('Помилка завантаження команд:', err)
                 )

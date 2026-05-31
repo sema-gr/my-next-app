@@ -145,6 +145,7 @@ export function TeamsDetailsPage() {
                         user &&
                         !isAdmin &&
                         !isCaptain &&
+                        user.role !== "ORGANIZER" &&
                         !isMember && (
                             <button
                                 onClick={handleJoinTeam}

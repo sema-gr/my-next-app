@@ -1,4 +1,4 @@
-import { Match } from "@/entities/matches";
+import { Match } from '@/entities/matches';
 
 export interface ITeam {
     id: string;
@@ -30,4 +30,17 @@ export interface ITeamDetails {
     }[];
     matchesA: Match[];
     matchesB: Match[];
+}
+
+export interface UseTeamsParams {
+    page?: number;
+    limit?: number;
+    search?: string;
+    ownerName?: string;
+    sortBy?: string;
+}
+
+export interface TeamsResponse {
+    data: ITeam[];
+    total: number;
 }

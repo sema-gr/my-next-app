@@ -6,3 +6,5 @@ export { StatBox } from './StatBox';
 export { InfoCard } from './InfoCard';
 export { ListGrid } from './ListGrid';
 export { RoleSelect } from './RoleSelect';
+export { FilterBar } from './FilterBar';
+export { FilterSelect } from './FilterSelect';

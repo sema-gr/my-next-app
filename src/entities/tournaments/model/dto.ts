@@ -58,3 +58,19 @@ export function getTournamentStatus(status: string) {
             };
     }
 }
+
+export const SPORTS = [
+    { value: 'FOOTBALL', label: 'Футбол' },
+    { value: 'BASKETBALL', label: 'Баскетбол' },
+    { value: 'VOLLEYBALL', label: 'Волейбол' },
+    { value: 'TENNIS', label: 'Теніс' },
+    { value: 'ESPORTS', label: 'Кіберспорт' },
+];
+
+export const MAX_TEAMS_OPTIONS = [
+    { value: '2', label: 'До 2 команд' },
+    { value: '4', label: 'До 4 команд' },
+    { value: '8', label: 'До 8 команд' },
+    { value: '16', label: 'До 16 команд' },
+    { value: '32', label: 'До 32 команд' },
+];

@@ -1,25 +1,43 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
 import { api } from '@/shared/api';
 import { IMatch } from '@/entities/matches';
+import { MatchesResponse, UseMatchesParams } from '@/entities/matches';
 
-export function useMatches() {
+export function useMatches(params: UseMatchesParams = {}) {
     const [data, setData] = useState<IMatch[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [total, setTotal] = useState<number>(0);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchMatches = async () => {
-            try {
-                const response = await api.get<IMatch[]>('/matches');
-                setData(response);
-            } catch (error) {
-                console.error('Помилка при завантаженні матчів:', error);
-            } finally {
-                setLoading(false);
+        setLoading(true);
+
+        const queryParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                queryParams.append(key, String(value));
             }
-        };
+        });
 
-        fetchMatches();
-    }, []);
+        const queryString = queryParams.toString()
+            ? `?${queryParams.toString()}`
+            : '';
 
-    return { data, loading };
+        api.get<MatchesResponse>(`/matches${queryString}`)
+            .then((res) => {
+                const payload =
+                    (res as any).data?.data !== undefined
+                        ? (res as any).data
+                        : res;
+                setData(payload.data || []);
+                setTotal(payload.total || 0);
+            })
+            .catch((err) => {
+                console.error('Помилка завантаження матчів:', err);
+            })
+            .finally(() => setLoading(false));
+    }, [JSON.stringify(params)]);
+
+    return { data, total, loading };
 }

@@ -1,5 +1,11 @@
 import { CreateTeamPage } from '@/screens/teams';
+import { Header } from '@/shared/ui';
 
 export default function Page() {
-    return <CreateTeamPage />;
+    return (
+        <div>
+            <Header />
+            <CreateTeamPage />;
+        </div>
+    );
 }

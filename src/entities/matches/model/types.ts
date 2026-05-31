@@ -47,3 +47,17 @@ export const MatchStatus = {
 } as const;
 
 export type MatchStatusType = (typeof MatchStatus)[keyof typeof MatchStatus];
+
+export interface MatchesResponse {
+    data: IMatch[];
+    total: number;
+}
+
+export interface UseMatchesParams {
+    page?: number;
+    limit?: number;
+    teamName?: string;
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+}

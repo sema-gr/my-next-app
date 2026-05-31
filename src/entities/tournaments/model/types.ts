@@ -67,6 +67,10 @@ export interface ITournament {
     createdAt: string;
     updatedAt: string;
     category: ICategory;
+    organizer: {
+        name: string;
+        organizationName: string | null;
+    };
 
     registrations: ITournamentRegistration[];
     matches: ITournamentMatch[];

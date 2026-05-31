@@ -11,3 +11,13 @@ export interface AuthResponse {
 }
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+
+export interface RegisterResponse {
+    status: string;
+    message: string;
+}
+
+export interface VerifyResponse {
+    status: string;
+    message: string;
+}

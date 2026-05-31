@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trophy, Clock, Medal } from 'lucide-react';
 import { TeamInfo } from '@/entities/teams';
 import { Match, MatchStatus } from '@/entities/matches';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 
 interface TournamentBracketProps {
@@ -23,8 +24,31 @@ export function TournamentBracket({
     const [scoreA, setScoreA] = useState('');
     const [scoreB, setScoreB] = useState('');
 
+    // 1. Стейт для перевірки, чи компонент завантажився в браузері
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // 2. Більш жорстке блокування скролу
+    useEffect(() => {
+        if (selectedMatch) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden'; // Для мобільних пристроїв
+        } else {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [selectedMatch]);
+
     const getTeamName = (teamId: string | null) => {
-        if (!teamId) return 'TBD (Очікується)';
+        if (!teamId) return 'BYE (Автопрохід)';
         return teams.find((t) => t.id === teamId)?.name || 'Невідома команда';
     };
 
@@ -188,63 +212,72 @@ export function TournamentBracket({
                 </div>
             </div>
 
-            {selectedMatch && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="text-center mb-8">
-                            <h2 className="text-2xl font-black text-slate-900 mb-2">
-                                Результат матчу
-                            </h2>
-                            <p className="text-sm text-slate-500 font-medium">
-                                Внесіть фінальний рахунок
-                            </p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
-                                <span className="font-bold text-slate-700 w-[60%] truncate">
-                                    {getTeamName(selectedMatch.teamAId)}
-                                </span>
-                                <input
-                                    min="0"
-                                    value={scoreA}
-                                    onChange={(e) => setScoreA(e.target.value)}
-                                    className="w-20 text-center text-xl font-black bg-white border border-slate-300 rounded-xl py-2 focus:outline-none focus:border-blue-500"
-                                    placeholder="0"
-                                />
+            {mounted &&
+                selectedMatch &&
+                createPortal(
+                    <div className="fixed top-0 left-0 w-screen h-[100dvh] z-[9999] flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                        <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="text-center mb-8">
+                                <h2 className="text-2xl font-black text-slate-900 mb-2">
+                                    Результат матчу
+                                </h2>
+                                <p className="text-sm text-slate-500 font-medium">
+                                    Внесіть фінальний рахунок
+                                </p>
                             </div>
 
-                            <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
-                                <span className="font-bold text-slate-700 w-[60%] truncate">
-                                    {getTeamName(selectedMatch.teamBId)}
-                                </span>
-                                <input
-                                    min="0"
-                                    value={scoreB}
-                                    onChange={(e) => setScoreB(e.target.value)}
-                                    className="w-20 text-center text-xl font-black bg-white border border-slate-300 rounded-xl py-2 focus:outline-none focus:border-blue-500"
-                                    placeholder="0"
-                                />
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
+                                    <span className="font-bold text-slate-700 w-[60%] truncate">
+                                        {getTeamName(selectedMatch.teamAId)}
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={scoreA}
+                                        onChange={(e) =>
+                                            setScoreA(e.target.value)
+                                        }
+                                        className="w-20 text-center text-xl font-black bg-white border border-slate-300 rounded-xl py-2 focus:outline-none focus:border-blue-500"
+                                        placeholder="0"
+                                    />
+                                </div>
+
+                                <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
+                                    <span className="font-bold text-slate-700 w-[60%] truncate">
+                                        {getTeamName(selectedMatch.teamBId)}
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={scoreB}
+                                        onChange={(e) =>
+                                            setScoreB(e.target.value)
+                                        }
+                                        className="w-20 text-center text-xl font-black bg-white border border-slate-300 rounded-xl py-2 focus:outline-none focus:border-blue-500"
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 mt-10">
+                                <button
+                                    onClick={() => setSelectedMatch(null)}
+                                    className="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                                >
+                                    Скасувати
+                                </button>
+                                <button
+                                    onClick={handleSubmitScore}
+                                    className="flex-1 py-3.5 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-700 shadow-lg shadow-slate-600/30 transition-all active:scale-95"
+                                >
+                                    Зберегти
+                                </button>
                             </div>
                         </div>
-
-                        <div className="flex gap-4 mt-10">
-                            <button
-                                onClick={() => setSelectedMatch(null)}
-                                className="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
-                            >
-                                Скасувати
-                            </button>
-                            <button
-                                onClick={handleSubmitScore}
-                                className="flex-1 py-3.5 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-700 shadow-lg shadow-slate-600/30 transition-all active:scale-95"
-                            >
-                                Зберегти
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import { MatchStatusType } from '@/entities/matches';
 import { ApplicationStatusType } from '@/entities/registration';
+import { ITournament } from '@/entities/tournaments';
 
 export interface IUser {
     id: string;
@@ -20,6 +21,10 @@ export interface IUser {
             members: number;
         };
     }[];
+    tournaments?: ITournament[];
+    _count?: {
+        tournaments: number;
+    };
 }
 
 export enum Role {
